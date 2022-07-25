@@ -152,7 +152,7 @@ function readChatbox() {
     chat += opts[a].text + " ";
   }
   
-  if(!isPaused) {
+  if (!isPaused) {
     // Check for lines indicating the core can be attacked.
     if (!isAttackable && (chat.indexOf("is vulnerable. Attack its core!") > -1 || 
                           chat.indexOf("dark feast subsides. Strike now!") > -1 || 
@@ -274,7 +274,7 @@ function calculateTimeAndUpdateUI() {
 
       let timeLeft = (attackTime - adjTime).toFixed(0);  
 
-      if(timeLeft != oldTimeLeft) {
+      if (timeLeft != oldTimeLeft) {
         if (timeLeft == 0) {
           timeLeft = 0;
         }
@@ -298,11 +298,13 @@ function updateAttacksUI(incomingAttack, upcomingAttack, timeLeft) {
         color = "red";
       }
 
-      if (timeLeft == 0 && countdownSoundSetting != 0) {
-        countdownFinishSound.play();
-      }
+      if (timeLeft == 0) {
+        message("Incoming attack: \n" + attacks[incomingAttack][0], "incomingBox", color);
 
-      message("Incoming attack: \n" + attacks[incomingAttack][0], "incomingBox", color);
+        if (countdownSoundSetting != 0) {
+          countdownFinishSound.play();
+        }
+      }
     }
     else {
       var color = "white";
@@ -322,28 +324,26 @@ function updateAttacksUI(incomingAttack, upcomingAttack, timeLeft) {
 
       message("Incoming attack in " + timeLeft + ": \n" + attacks[incomingAttack][0], "incomingBox", color);
     }
+
+    // Update tooltip & upcoming attack UI if no tooltip is currently displayed
+    if (currentTooltip == "") {
+      if (tooltipSetting == 1) {
+        updateTooltip(attacks[incomingAttack][0]);
+      }
+      else if (tooltipSetting == 2) {
+        updateTooltip(attacks[incomingAttack][1]);
+      }
+      else if (tooltipSetting == 3) {
+        updateTooltip(attacks[incomingAttack][0] + ", " + attacks[incomingAttack][1]);
+      }
+
+      let keys = Object.keys(attacks);
+      message("Next attack: " + attacks[keys[upcomingAttack]][0], "upcomingBox");
+    }
   }
   else if (incomingAttack == 0 && currentTooltip != "") {
     updateTooltip();
     message("");
-  }
-  
-  if (incomingAttack != 0 && currentTooltip == "") {
-    if (tooltipSetting == 1) {
-      updateTooltip(attacks[incomingAttack][0]);
-    }
-    else if (tooltipSetting == 2) {
-      updateTooltip(attacks[incomingAttack][1]);
-    }
-    else if (tooltipSetting == 3) {
-      updateTooltip(attacks[incomingAttack][0] + ", " + attacks[incomingAttack][1]);
-    }
-  }
-
-  // Check whether there is an upcoming attack & update UI accordingly
-  if (upcomingAttack != 0) {
-    let keys = Object.keys(attacks);
-    message("Next attack: " + attacks[keys[upcomingAttack]][0], "upcomingBox");
   }
 }
 
@@ -367,8 +367,6 @@ function readBuffBar() {
   if (crystalMaskSetting != 0) {
     // First check if a buff bar has already been found, if not look for one now
     if (buffReader.pos === null) {
-      console.log("Unable to find buffbar");
-
       buffReader.find();
     }
     else {
@@ -479,7 +477,7 @@ function nudgeTimer(time) {
 
 // Updates the text inside element
 function message(str,elementId="incomingBox",color="white") {
-  if(elid(elementId).innerHTML != str){
+  if (elid(elementId).innerHTML != str) {
     elid(elementId).innerHTML = str;
     elid(elementId).style.color = color;
   }
@@ -548,7 +546,7 @@ function updateCountdownSoundSetting(playSound=false) {
 }
 
 // Update the compact mode setting with new value from localstorage
-function updateCompactMode(showModal=false){
+function updateCompactMode(showModal=false) {
   compactModeSetting = parseInt(localStorage.susCompactMode);
 
   if (compactModeSetting === 0) {
@@ -566,7 +564,7 @@ function updateCompactMode(showModal=false){
     A1lib.identifyApp("appconfig.json");
   }
 
-  if(showModal){
+  if (showModal) {
     $('#resizeModal').modal('show');
 
     console.log("Compact mode setting changed to: " + compactModeSetting);
@@ -735,7 +733,7 @@ $('document').ready(function() {
     crystalMaskSetting = parseInt(localStorage.susCMask);
 
     // Check for legacy cmask setting, set it with new setting
-    if(crystalMaskSetting == 2) {
+    if (crystalMaskSetting == 2) {
       crystalMaskSetting = 1;
       crystalMaskSoundSetting = 1;
 
